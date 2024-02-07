@@ -233,7 +233,7 @@ else
         COMMON_VPATH += $(PLATFORM_PATH)/$(PLATFORM_KEY)/$(DRIVER_DIR)/flash
         COMMON_VPATH += $(DRIVER_PATH)/flash
         SRC += eeprom_driver.c eeprom_legacy_emulated_flash.c legacy_flash_ops.c
-      else ifneq ($(filter $(MCU_SERIES),STM32F1xx STM32F3xx STM32F4xx STM32L4xx STM32G4xx WB32F3G71xx WB32FQ95xx GD32VF103),)
+      else ifneq ($(filter $(MCU_SERIES),STM32F1xx STM32F3xx STM32F4xx STM32L4xx STM32G4xx WB32F3G71xx WB32FQ95xx GD32VF103 AIR32F10x AT32F415xx AT32F413xx AT32F403_7xx AT32F435_7xx AT32F402_5xx AT32F423xx),)
         # Wear-leveling EEPROM implementation, backed by MCU flash
         OPT_DEFS += -DEEPROM_DRIVER -DEEPROM_WEAR_LEVELING
         SRC += eeprom_driver.c eeprom_wear_leveling.c
@@ -594,6 +594,9 @@ ifeq ($(strip $(WS2812_DRIVER_REQUIRED)), yes)
     ifeq ($(strip $(PLATFORM)), CHIBIOS)
         ifeq ($(strip $(WS2812_DRIVER)), pwm)
             OPT_DEFS += -DSTM32_DMA_REQUIRED=TRUE
+            OPT_DEFS += -DGD32_DMA_REQUIRED=TRUE
+            OPT_DEFS += -DAIR32_DMA_REQUIRED=TRUE
+            OPT_DEFS += -DAT32_DMA_REQUIRED=TRUE
         endif
     endif
 

@@ -82,6 +82,16 @@
                 "GD32VF103",
                 "WB32F3G71",
                 "WB32FQ95",
+                "AIR32F103",
+                "AT32F415",
+                "AT32F413",
+                "AT32F403A",
+                "AT32F407",
+                "AT32F402",
+                "AT32F405",
+                "AT32F435",
+                "AT32F437",
+                "AT32F423",
                 "atmega16u2",
                 "atmega32u2",
                 "atmega16u4",
@@ -197,7 +207,8 @@
                 "uf2boot",
                 "unknown",
                 "usbasploader",
-                "wb32-dfu"
+                "wb32-dfu",
+                "at32-dfu"
             ]
         },
         "bootloader_instructions": {
