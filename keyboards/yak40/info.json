@@ -10,11 +10,18 @@
         "console": false,
         "extrakey": true,
         "mousekey": true,
+        "encoder": true,
         "nkro": true
     },
     "matrix_pins": {
         "cols": ["GP21", "GP20", "GP19", "GP18", "GP17", "GP16", "GP6", "GP5", "GP4", "GP3", "GP2", "GP1", "GP0"],
         "rows": ["GP25", "GP24", "GP8", "GP9"]
+    },
+    "encoder": {
+        "rotary": [
+            { "pin_a": "GP12", "pin_b": "GP13", "resolution": 4 },
+            { "pin_a": "GP10", "pin_b": "GP11", "resolution": 4 }
+        ]
     },
     "processor": "RP2040",
     "url": "",
