@@ -14,6 +14,6 @@ enum BtCommState {
 };
 
 void start_control(void);
-void start_discovering(void);
-void start_connection(void);
+void start_discovering(int slot);
+void start_connection(int slot);
 void start_disconnection(void);

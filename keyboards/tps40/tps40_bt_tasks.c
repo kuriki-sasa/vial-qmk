@@ -6,9 +6,9 @@
 #include "tps40_bt_event.h"
 
 int initialize_task(coroutine_t coroutine) {
-    //TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
-    //const uint8_t* received_command = args->received_command;
-    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    const uint8_t* received_command = args->received_command;
+    //uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 
@@ -111,11 +111,11 @@ int initialize_task(coroutine_t coroutine) {
 }
 
 int start_discovering_task(coroutine_t coroutine) {
-    // TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
-    // int slot = args->current_slot;
-    // const uint8_t* received_command = args->received_command;
-    int slot = 1;
-    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    int slot = args->current_slot;
+    const uint8_t* received_command = args->received_command;
+//    int slot = 1;
+//    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 
@@ -165,8 +165,9 @@ int start_discovering_task(coroutine_t coroutine) {
 }
 
 int start_connection_task(coroutine_t coroutine) {
-    int slot = 1;
-    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    int slot = args->current_slot;
+    const uint8_t* received_command = args->received_command;
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 
@@ -194,7 +195,8 @@ int start_connection_task(coroutine_t coroutine) {
 }
 
 int start_disconnection_task(coroutine_t coroutine) {
-    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    const uint8_t* received_command = args->received_command;
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 

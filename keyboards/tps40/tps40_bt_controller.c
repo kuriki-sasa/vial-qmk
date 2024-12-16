@@ -12,18 +12,26 @@ void run_task(coroutine_t task) {
     co_call(current_task);
 }
 
+int current_slot = 1;
 int coroutine_stack[128];
 void start_initialization(void) {
     coroutine_t task = co_create(initialize_task, 0, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
 }
 
-void start_discovering(void) {
-    coroutine_t task = co_create(start_discovering_task, 0, coroutine_stack, sizeof(coroutine_stack));
+void start_discovering(int slot) {
+    current_slot = slot;
+    TaskArgs args;
+    args.current_slot = slot;
+    args.received_command = NULL;
+    coroutine_t task = co_create(start_discovering_task, &args, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
 }
 
-void start_connection(void) {
+void start_connection(int slot) {
+    TaskArgs args;
+    args.current_slot = slot;
+    args.received_command = NULL;
     coroutine_t task = co_create(start_connection_task, 0, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
 }
@@ -103,7 +111,10 @@ void handle_received_command(const uint8_t* received_command) {
         return;
     }
     // 実行中のタスクを進行
-    co_set_addrword(current_task, received_command);
+    TaskArgs args;
+    args.current_slot = current_slot;
+    args.received_command = received_command;
+    co_set_addrword(current_task, &args);
     co_resume_t result = co_call(current_task);;
     if (result == CO_INVALID) {
         event = co_get_retval(current_task, enum BtCommEvent);
