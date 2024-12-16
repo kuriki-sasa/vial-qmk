@@ -13,3 +13,29 @@
 
 #define LOCKING_SUPPORT_ENABLE
 #define LOCKING_RESYNC_ENABLE
+
+#define SERIAL_USART_FULL_DUPLEX   // Enable full duplex operation mode.
+#define SERIAL_USART_TX_PIN A2     // USART TX pin
+#define SERIAL_USART_RX_PIN A3     // USART RX pin
+#define SERIAL_USART_SPEED 115200
+#define SERIAL_USART_TIMEOUT 10
+#define SERIAL_USART_DRIVER SD2
+
+/*
+ * Board identifier
+ */
+#define BOARD_AT32F415xx
+#define BOARD_NAME                  "AT32F415"
+
+#define AT32F415xB
+#define AT32F415CBT7
+
+#define AT32_HEXTCLK              16000000U
+
+/*
+ * BT settings
+ */
+#define TPS40_WAIT_COMMAND_TIMEOUT_COUNT 2500000
+#define TPS40_BOARD_NAME "TPS-40-CE"
+#define TPS40_IDLETIMES 600
+#define TPS40_VIDPID "1EA71F46"

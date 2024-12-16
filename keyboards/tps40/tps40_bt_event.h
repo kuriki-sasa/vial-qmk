@@ -1,0 +1,18 @@
+#pragma once
+
+enum BtCommEvent {
+    UNKNOWN = 0,
+
+    // Events from BT module
+    MODULE_BOOTED,
+    MODULE_PREPARED,
+    PAIRING_EXITED,
+    CONNECTED,
+    CONNECTION_STARTED,
+    DISCONNECTED,
+
+    // Inner events
+    UNEXPECTED_COMMAND_RECEIVED,
+    INITIALIZE_COMPLETED,
+    DISCOVER_REQUESTED,
+};

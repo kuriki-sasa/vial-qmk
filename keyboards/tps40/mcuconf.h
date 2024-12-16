@@ -167,7 +167,7 @@
  * SERIAL driver system settings.
  */
 #define AT32_SERIAL_USE_USART1                FALSE
-#define AT32_SERIAL_USE_USART2                FALSE
+#define AT32_SERIAL_USE_USART2                TRUE
 #define AT32_SERIAL_USE_USART3                FALSE
 #define AT32_SERIAL_USE_UART4                 FALSE
 #define AT32_SERIAL_USE_UART5                 FALSE
