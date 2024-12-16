@@ -71,11 +71,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //     uprintf("%02x ", buffer[i]);
     // }
     // print("\n");
-    if (record->event.pressed) {
+    if (record->event.pressed && keycode == KC_A) {
         //run_initial_sequence();
         // print_debug_log();
-        //start_discover();
-        //toggle_discovering(1);
+        print("=== start discovering ====\n");
+        start_discovering();
         // while (timeout <= UART_MATRIX_RESPONSE_TIMEOUT) {
         //     size_t length = read_from_uart();
         //     if (length <= 0) {
@@ -90,6 +90,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         //     uprintf("%02x ", buffer[i]);
         // }
         // print("\n");
+    } else if (record->event.pressed && keycode == KC_S) {
+        print("=== start connection ====\n");
+        start_connection();
+    } else if (record->event.pressed && keycode == KC_D) {
+        print("=== start disconn ====\n");
+        start_disconnection();
     }
     uprintf("KL: kc: 0x%04X, col: %2u, row: %2u, pressed: %u, time: %5u, int: %u, count: %u\n", keycode, record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
 #endif

@@ -14,9 +14,9 @@ int initialize_task(coroutine_t coroutine) {
 
     // Send initial "AT" command
     send_run_command();
-    print("step222222\n");
+
     co_yield();
-    print("step33333333\n");
+
     if (!is_success_response(received_command)) {
         uprintf("Initial sequence: step1 failed! %s\n", received_command);
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
@@ -110,10 +110,12 @@ int initialize_task(coroutine_t coroutine) {
     co_end_ret(INITIALIZE_COMPLETED);
 }
 
-int toggle_discovering_task(coroutine_t coroutine) {
-    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
-    int slot = args->current_slot;
-    const uint8_t* received_command = args->received_command;
+int start_discovering_task(coroutine_t coroutine) {
+    // TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    // int slot = args->current_slot;
+    // const uint8_t* received_command = args->received_command;
+    int slot = 1;
+    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 
@@ -158,26 +160,51 @@ int toggle_discovering_task(coroutine_t coroutine) {
     if (!is_success_response(received_command)) {
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
     }
-    co_end_ret(DISCOVER_REQUESTED);
+
+    co_end_ret(UNKNOWN);
 }
 
-// bool start_connection(int slotNum) {
-//     switch (slotNum) {
-//         case 1:
-//             send_write_command(COMMAND_CONNECT, "1");
-//             break;
-//         case 2:
-//             send_write_command(COMMAND_CONNECT, "2");
-//             break;
-//         case 3:
-//             send_write_command(COMMAND_CONNECT, "3");
-//             break;
-//         default:
-//             return false;
-//     }
-//     if (!wait_success_response()) {
-//         return false;
-//     }
-//     change_state(CONNECTING);
-//     return true;
-// }
+int start_connection_task(coroutine_t coroutine) {
+    int slot = 1;
+    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    switch (slot) {
+        case 1:
+            send_write_command(COMMAND_CONNECT, "1");
+            break;
+        case 2:
+            send_write_command(COMMAND_CONNECT, "2");
+            break;
+        case 3:
+            send_write_command(COMMAND_CONNECT, "3");
+            break;
+        default:
+            return false;
+    }
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(UNKNOWN);
+}
+
+int start_disconnection_task(coroutine_t coroutine) {
+    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    send_run_command(COMMAND_DISCONNECT);
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(UNKNOWN);
+}

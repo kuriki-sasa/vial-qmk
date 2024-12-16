@@ -7,22 +7,41 @@
 #include "print.h"
 
 coroutine_t current_task = NULL;
-
-int coroutine_stack[128];
-void start_initialization(void) {
-    current_task = co_create(initialize_task, 0, coroutine_stack, sizeof(coroutine_stack));
+void run_task(coroutine_t task) {
+    current_task = task;
     co_call(current_task);
 }
 
-static enum BtCommState current_state = STATE_UNSUPPORTED;
+int coroutine_stack[128];
+void start_initialization(void) {
+    coroutine_t task = co_create(initialize_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+}
 
-enum BtCommState unsupported_state(enum BtCommEvent event) {
+void start_discovering(void) {
+    coroutine_t task = co_create(start_discovering_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+}
+
+void start_connection(void) {
+    coroutine_t task = co_create(start_connection_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+}
+
+void start_disconnection(void) {
+    coroutine_t task = co_create(start_disconnection_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+}
+
+static enum BtCommState current_state = STATE_INITIAL;
+
+enum BtCommState initial_state(enum BtCommEvent event) {
     switch (event) {
         case MODULE_PREPARED:
             start_initialization();
             return STATE_INITIALIZING;
         default:
-            return STATE_UNSUPPORTED;
+            return STATE_INITIAL;
     }
 }
 
@@ -40,7 +59,7 @@ enum BtCommState idle_state(enum BtCommEvent event) {
 }
 
 enum BtCommState (*handler[3])(enum BtCommEvent) = {
-    unsupported_state,
+    initial_state,
     initialize_state,
     idle_state
 };
@@ -53,7 +72,7 @@ enum BtCommEvent to_event(const uint8_t* received_command) {
     if (is_expected_notification(received_command, COMMAND_EVENT, "0001")) {
         return MODULE_BOOTED;
     } else if (is_expected_notification(received_command, COMMAND_EVENT, "0002")) {
-        return PAIRING_EXITED;
+        return PAIRING_STARTED;
     } else if (is_expected_notification(received_command, COMMAND_EVENT, "0004")) {
         return CONNECTED;
     } else if (is_expected_notification(received_command, COMMAND_EVENT, "0008")) {
@@ -119,6 +138,6 @@ static THD_FUNCTION(ReadThread, arg) {
 }
 
 void start_control(void) {
-    chThdCreateStatic(waReadThread, sizeof(waReadThread), NORMALPRIO + 8, ReadThread, NULL);
+    chThdCreateStatic(waReadThread, sizeof(waReadThread), NORMALPRIO + 32, ReadThread, NULL);
     start_communication();
 }

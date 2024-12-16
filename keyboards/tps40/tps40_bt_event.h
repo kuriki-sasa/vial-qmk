@@ -6,7 +6,7 @@ enum BtCommEvent {
     // Events from BT module
     MODULE_BOOTED,
     MODULE_PREPARED,
-    PAIRING_EXITED,
+    PAIRING_STARTED,
     CONNECTED,
     CONNECTION_STARTED,
     DISCONNECTED,

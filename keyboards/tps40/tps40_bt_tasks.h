@@ -8,4 +8,6 @@ typedef struct task_args {
 } TaskArgs;
 
 int initialize_task(coroutine_t coroutine);
-int toggle_discovering_task(coroutine_t coroutine);
+int start_discovering_task(coroutine_t coroutine);
+int start_connection_task(coroutine_t coroutine);
+int start_disconnection_task(coroutine_t coroutine);
