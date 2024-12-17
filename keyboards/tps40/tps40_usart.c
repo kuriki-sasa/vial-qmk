@@ -7,9 +7,9 @@
 
 static SerialConfig serial_config = {
     .speed = (SERIAL_USART_SPEED),
-    .ctrl1   = (0x00),
-    .ctrl2   = (USART_CTRL2_LINEN),
-    .ctrl3  = (0x00)
+    .ctrl1 = (0x00),
+    .ctrl2 = (0x00),
+    .ctrl3 = (0x00)
 };
 
 static SerialDriver* serial_driver = &SERIAL_USART_DRIVER;

@@ -2,8 +2,8 @@
 
 #include "print.h"
 
-#include "tps40_bt_communication.h"
 #include "tps40_bt_event.h"
+#include "tps40_bt_communication.h"
 
 int initialize_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
@@ -114,32 +114,8 @@ int start_discovering_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
     int slot = args->current_slot;
     const uint8_t* received_command = args->received_command;
-//    int slot = 1;
-//    uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
 
     co_begin_rettype(coroutine, enum BtCommEvent);
-
-    // 効果が不明
-    // switch (slot) {
-    //     case 1:
-    //         send_write_command(COMMAND_SELECT_DEVICE, "0");
-    //         break;
-    //     case 2:
-    //         send_write_command(COMMAND_SELECT_DEVICE, "1");
-    //         break;
-    //     case 3:
-    //         send_write_command(COMMAND_SELECT_DEVICE, "2");
-    //         break;
-    //     default:
-    //         return false;
-    // }
-
-    // co_yield();
-
-    // if (!is_success_response(received_command)) {
-    //     uprintf("Initial sequence: step2 failed %s\n", received_command);
-    //     co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
-    // }
 
     switch (slot) {
         case 1:
@@ -208,5 +184,5 @@ int start_disconnection_task(coroutine_t coroutine) {
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
     }
 
-    co_end_ret(UNKNOWN);
+    co_end_ret(DISCONNECTION_STARTED);
 }

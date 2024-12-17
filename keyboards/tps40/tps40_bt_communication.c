@@ -50,6 +50,10 @@ void start_communication(void) {
 
 bool send_text(const uint8_t* command) {
     size_t length = strlen((char*)command);
+    return send_buffer(command, length);
+}
+
+bool send_buffer(const uint8_t* command, const uint8_t length) {
     tps40_usart_send(command, length);
     //uprintf("send: %s", command);
     return true;

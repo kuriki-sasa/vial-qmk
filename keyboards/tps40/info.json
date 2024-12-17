@@ -8,10 +8,11 @@
         "bootmagic": true,
         "encoder": true,
         "command": false,
-        "console": true,
-        "extrakey": false,
+        "console": false,
+        "extrakey": true,
         "mousekey": false,
-        "nkro": false
+        "nkro": false,
+        "bluetooth": true
     },
     "matrix_pins": {
         "cols": ["A10", "F6", "F7", "C12", "D2", "B3", "B4", "B5", "B8", "B9", "C13", "C14"],
@@ -21,6 +22,9 @@
         "rotary": [
                 { "pin_a": "C11", "pin_b": "C10", "resolution": 4 }
         ]
+    },
+    "bluetooth": {
+        "driver": "custom"
     },
     "processor": "AT32F415",
     "url": "",
