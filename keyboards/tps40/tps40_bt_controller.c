@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "print.h"
+#include "bluetooth.h"
 
 #include "tps40_bt_tasks.h"
 #include "tps40_bt_constants.h"
@@ -81,6 +82,7 @@ bool send_basic_keycodes(report_keyboard_t *report) {
     if (current_state != STATE_CONNECTED) {
         return false;
     }
+
     static const uint8_t *base_command = WRITE_COMMAND(COMMAND_HID, "\0\0\0\0\0\0\0\0\0");
     uint8_t command[18];
     memcpy(command, base_command, 18);
@@ -102,6 +104,7 @@ bool send_mouse_keycodes(report_mouse_t *report) {
     if (current_state != STATE_CONNECTED) {
         return false;
     }
+
     static const uint8_t *base_command = WRITE_COMMAND(COMMAND_HID, "\0\0\0\0\0\0\0\0\0");
     uint8_t command[18];
     memcpy(command, base_command, 18);
@@ -316,4 +319,28 @@ static THD_FUNCTION(ReadThread, arg) {
 void start_control(void) {
     chThdCreateStatic(waReadThread, sizeof(waReadThread), NORMALPRIO + 32, ReadThread, NULL);
     start_communication();
+}
+
+// ================================
+// Call from QMK
+// ================================
+
+void bluetooth_init(void) {
+    start_control();
+}
+
+void bluetooth_task(void) {}
+
+void bluetooth_send_keyboard(report_keyboard_t *report) {
+    send_basic_keycodes(report);
+}
+
+void bluetooth_send_mouse(report_mouse_t *report) {
+    print("send mouse\n");
+    send_mouse_keycodes(report);
+}
+
+void bluetooth_send_consumer(uint16_t usage) {
+    print("send mouse\n");
+    send_consumer_keycodes(usage);
 }

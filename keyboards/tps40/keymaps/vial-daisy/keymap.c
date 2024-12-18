@@ -3,6 +3,9 @@
 
 #include QMK_KEYBOARD_H
 
+#include "tps40_led.h"
+#include "tps40_battery_monitoring.h"
+
 #define _QWERTY 0
 #define _LWR 1
 #define _RSE 2
@@ -67,26 +70,30 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     layer_state_t computed = update_tri_layer_state(state, _LWR, _RSE, _ADJ);
     switch (get_highest_layer(computed)) {
         case _LWR:
-            tps40_set_led(1, true);
-            tps40_set_led(2, false);
+            set_led_state(1, true);
+            set_led_state(2, false);
             break;
         case _RSE:
-            tps40_set_led(1, false);
-            tps40_set_led(2, true);
+            set_led_state(1, false);
+            set_led_state(2, true);
             break;
         case _ADJ:
-            tps40_set_led(1, true);
-            tps40_set_led(2, true);
+            set_led_state(1, true);
+            set_led_state(2, true);
             break;
         default:
-            tps40_set_led(1, false);
-            tps40_set_led(2, false);
+            set_led_state(1, false);
+            set_led_state(2, false);
             break;
     }
     return computed;
 }
 
 bool led_update_user(led_t led_state) {
-    tps40_set_led(0, led_state.caps_lock);
+    set_led_state(0, led_state.caps_lock);
     return false;
+}
+
+void battery_state_updated(enum BatteryState state) {
+    uprintf("battery state: %d\n", state);
 }

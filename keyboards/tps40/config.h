@@ -39,3 +39,8 @@
 #define TPS40_BOARD_NAME "TPS-40-CE"
 #define TPS40_IDLETIMES 600
 #define TPS40_VIDPID "1EA71F46"
+
+/*
+ * ADC settings
+ */
+ #define ADC_RESOLUTION ADC_CFGR1_RES_12BIT

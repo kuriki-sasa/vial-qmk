@@ -17,7 +17,6 @@ enum BtCommState {
     STATE_ERROR
 };
 
-void start_control(void);
 bool start_discovering(int slot);
 bool start_connection(int slot);
 bool start_disconnection(void);

@@ -95,7 +95,7 @@
 /*
  * ADC driver system settings.
  */
-#define AT32_ADC_USE_ADC1                     FALSE
+#define AT32_ADC_USE_ADC1                     TRUE
 #define AT32_ADC_ADC1_DMA_STREAM              AT32_DMA_STREAM_ID(1, 1)
 #define AT32_ADC_ADC1_DMA_PRIORITY            2
 #define AT32_ADC_ADC1_IRQ_PRIORITY            6
