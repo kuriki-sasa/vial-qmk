@@ -67,7 +67,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         start_connection(1);
     } else if (record->event.pressed && keycode == KC_D) {
         print("=== start disconn ====\n");
-        start_discovering(3);
+        start_disconnection();
     }
     uprintf("KL: kc: 0x%04X, mod: 0x%02X, col: %2u, row: %2u, pressed: %u, time: %5u, int: %u, count: %u\n", keycode, get_mods(), record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
 //#endif

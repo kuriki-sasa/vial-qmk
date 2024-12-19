@@ -55,7 +55,7 @@
 #define AT32_USBCLK_SRC                       AT32_USBCLK_SRC_PLL
 #define AT32_USBDIV                           AT32_USBDIV_DIV3
 #define AT32_CLKOUT_SEL                       AT32_CLKOUT_SEL_NOCLOCK
-#define AT32_RTCSEL                           AT32_RTCSEL_LICK
+#define AT32_RTCSEL                           AT32_RTCSEL_HEXTDIV
 #define AT32_PVM_ENABLE                       FALSE
 #define AT32_PVM                              AT32_PVMSEL_LEV0
 

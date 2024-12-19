@@ -46,6 +46,7 @@ bool start_discovering(int slot) {
 }
 
 bool start_connection(int slot) {
+    uprintf("start_connection state:%d, slot:%d\n", current_state, slot);
     switch (current_state) {
         case STATE_INITIAL:
         case STATE_INITIALIZING:
@@ -64,6 +65,7 @@ bool start_connection(int slot) {
 }
 
 bool start_disconnection(void) {
+    uprintf("start_disconnection state:%d\n", current_state);
     switch (current_state) {
         case STATE_INITIAL:
         case STATE_INITIALIZING:
@@ -147,6 +149,8 @@ enum BtCommState initial_state(enum BtCommEvent event) {
         case MODULE_PREPARED:
             start_initialization();
             return STATE_INITIALIZING;
+        case INITIALIZE_COMPLETED:
+            return STATE_IDLE;
         default:
             return STATE_INITIAL;
     }
@@ -327,6 +331,7 @@ void start_control(void) {
 
 void bluetooth_init(void) {
     start_control();
+    start_initialization();
 }
 
 void bluetooth_task(void) {}
@@ -336,11 +341,9 @@ void bluetooth_send_keyboard(report_keyboard_t *report) {
 }
 
 void bluetooth_send_mouse(report_mouse_t *report) {
-    print("send mouse\n");
     send_mouse_keycodes(report);
 }
 
 void bluetooth_send_consumer(uint16_t usage) {
-    print("send mouse\n");
     send_consumer_keycodes(usage);
 }

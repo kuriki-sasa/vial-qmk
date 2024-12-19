@@ -3,7 +3,7 @@
 #define LED_NUM 3
 #define LED_PINS { C8, C7, C6 }
 
-#define BOARD_OTG_NOVBUSSENS 1
+//#define BOARD_OTG_NOVBUSSENS 1
 
 #define USB_ENDPOINTS_ARE_REORDERABLE
 
