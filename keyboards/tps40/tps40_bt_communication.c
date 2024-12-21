@@ -6,7 +6,7 @@
 #include "tps40_usart.h"
 #include "print.h"
 
-static uint8_t received_command_buffer[1024] = { 0 };
+static uint8_t received_command_buffer[512] = { 0 };
 static int last_index = 0;
 
 size_t read_from_uart(void) {
@@ -71,3 +71,6 @@ void print_buffer(void) {
     print("\n");
 }
 
+bool send_wakeup(void) {
+    return tps40_wakeup_frame_send();
+}

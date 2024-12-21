@@ -3,14 +3,6 @@
 #define LED_NUM 3
 #define LED_PINS { C8, C7, C6 }
 
-//#define BOARD_OTG_NOVBUSSENS 1
-
-#define USB_ENDPOINTS_ARE_REORDERABLE
-
-#ifndef EARLY_INIT_PERFORM_BOOTLOADER_JUMP
-#    define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
-#endif
-
 #define LOCKING_SUPPORT_ENABLE
 #define LOCKING_RESYNC_ENABLE
 
@@ -22,15 +14,16 @@
 #define SERIAL_USART_DRIVER SD2
 
 /*
- * Board identifier
+ * Board config
  */
-#define BOARD_AT32F415xx
-#define BOARD_NAME                  "AT32F415"
-
 #define AT32F415xB
-#define AT32F415CBT7
+#define AT32F415RBT7_7
 
 #define AT32_HEXTCLK              16000000U
+
+#define BOARD_OTG_NOVBUSSENS
+#define USB_ENDPOINTS_ARE_REORDERABLE
+#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
 
 /*
  * BT settings

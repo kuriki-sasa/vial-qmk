@@ -74,8 +74,8 @@
 #define BOARD_AT32F415xx
 #define BOARD_NAME                  "AT32F415"
 
-#define AT32F415xB
-#define AT32F415CBT7
+// #define AT32F415xB
+// #define AT32F415CBT7
 
 #if !defined(AT32F415xx)
 #define AT32F415xx

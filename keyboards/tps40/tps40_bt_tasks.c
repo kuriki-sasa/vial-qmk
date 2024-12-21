@@ -55,15 +55,6 @@ int initialize_task(coroutine_t coroutine) {
     co_yield();
 
     if (!is_success_response(received_command)) {
-        uprintf("Initial sequence: step5 failed! %s\n", received_command);
-        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
-    }
-
-    send_write_command(COMMAND_IDLETIMES_SETTINGS, TO_STR_HELPER(TPS40_IDLETIMES));
-
-    co_yield();
-
-    if (!is_success_response(received_command)) {
         uprintf("Initial sequence: step6 failed! %s\n", received_command);
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
     }
@@ -149,6 +140,26 @@ int start_connection_task(coroutine_t coroutine) {
 
     switch (slot) {
         case 1:
+            send_write_command(COMMAND_SELECTED_DEVICE, "1");
+            break;
+        case 2:
+            send_write_command(COMMAND_SELECTED_DEVICE, "2");
+            break;
+        case 3:
+            send_write_command(COMMAND_SELECTED_DEVICE, "3");
+            break;
+        default:
+            return false;
+    }
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    switch (slot) {
+        case 1:
             send_write_command(COMMAND_CONNECT, "1");
             break;
         case 2:
@@ -185,4 +196,89 @@ int start_disconnection_task(coroutine_t coroutine) {
     }
 
     co_end_ret(DISCONNECTION_STARTED);
+}
+
+int enable_auto_idle_task(coroutine_t coroutine) {
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    const uint8_t* received_command = args->received_command;
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    send_write_command(COMMAND_IDLETIMES_SETTINGS, TO_STR_HELPER(TPS40_IDLETIMES));
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    send_write_command(COMMAND_AUTOIDLE_SETTINGS, ENABLE);
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(UNKNOWN);
+}
+
+int start_deepsleep_task(coroutine_t coroutine) {
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    const uint8_t* received_command = args->received_command;
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    send_run_command(COMMAND_DEEPSLEEP);
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(UNKNOWN);
+}
+
+int start_reconnection_last_slot_task(coroutine_t coroutine) {
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    const uint8_t* received_command = args->received_command;
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    send_read_command(COMMAND_SELECTED_DEVICE);
+
+    co_yield();
+
+    if (!is_expected_notification(received_command, COMMAND_SELECTED_DEVICE, "1") &&
+        !is_expected_notification(received_command, COMMAND_SELECTED_DEVICE, "2") &&
+        !is_expected_notification(received_command, COMMAND_SELECTED_DEVICE, "3")) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    // +KEYBOARD:[?]
+    uint8_t last_connected_slot = received_command[10];
+    uprintf("last connected slot: %c\n", last_connected_slot);
+    switch (last_connected_slot) {
+        case '1':
+            send_write_command(COMMAND_CONNECT, "1");
+            break;
+        case '2':
+            send_write_command(COMMAND_CONNECT, "2");
+            break;
+        case '3':
+            send_write_command(COMMAND_CONNECT, "3");
+            break;
+        default:
+            co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+
+    }
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(CONNECTION_STARTED);
 }

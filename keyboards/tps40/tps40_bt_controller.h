@@ -14,12 +14,18 @@ enum BtCommState {
     STATE_CONNECTED,
     STATE_DISCONNECTING,
 
+    STATE_SLEEPING,
+
     STATE_ERROR
 };
 
 bool start_discovering(int slot);
 bool start_connection(int slot);
 bool start_disconnection(void);
+bool reconnect_last_slot(void);
+
+bool enable_auto_sleep(void);
+bool deepsleep(void);
 
 bool send_basic_keycodes(report_keyboard_t *report);
 bool send_mouse_keycodes(report_mouse_t *report);

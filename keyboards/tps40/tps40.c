@@ -15,7 +15,7 @@ void keyboard_pre_init_kb(void) {
 }
 
 void keyboard_post_init_kb(void) {
-    start_battery_monitoring();
+    //start_battery_monitoring();
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -61,14 +61,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         //     uprintf("%02x ", buffer[i]);
         // }
         // print("\n");
-        start_discovering(1);
+        int LPRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_LPRSTF);
+        int WWDTRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_WWDTRSTF);
+        int WDTRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_WDTRSTF);
+        int SWRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_SWRSTF);
+        int PORRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_PORRSTF);
+        int NRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_NRSTF);
+        uprintf("lpr: %d, wwdt: %d, wdt: %d, swr: %d, por: %d, nrst:%d\n", LPRSTF, WWDTRSTF, WDTRSTF, SWRSTF, PORRSTF, NRSTF);
+        deepsleep();
+        //start_discovering(1);
     } else if (record->event.pressed && keycode == KC_S) {
         print("=== start connection ====\n");
-        start_connection(1);
+        tps40_wakeup_frame_send();
     } else if (record->event.pressed && keycode == KC_D) {
         print("=== start disconn ====\n");
-        start_disconnection();
+        start_connection(1);
+    } else if (record->event.pressed && keycode == KC_F) {
+        start_connection(2);
+    } else if (record->event.pressed && keycode == KC_G) {
+        reconnect_last_slot();
     }
+
     uprintf("KL: kc: 0x%04X, mod: 0x%02X, col: %2u, row: %2u, pressed: %u, time: %5u, int: %u, count: %u\n", keycode, get_mods(), record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
 //#endif
   return true;

@@ -23,3 +23,4 @@ bool is_expected_text(const uint8_t* received, const uint8_t* text);
 void print_buffer(void);
 size_t read_from_uart(void);
 bool read_command_from_buffer(uint8_t* dest);
+bool send_wakeup(void);

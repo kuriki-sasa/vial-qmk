@@ -27,6 +27,9 @@ void start_initialization(void) {
 }
 
 bool start_discovering(int slot) {
+    if (current_state == STATE_SLEEPING) {
+        return send_wakeup();
+    }
     switch (current_state) {
         case STATE_INITIAL:
         case STATE_INITIALIZING:
@@ -46,6 +49,9 @@ bool start_discovering(int slot) {
 }
 
 bool start_connection(int slot) {
+    if (current_state == STATE_SLEEPING) {
+        return send_wakeup();
+    }
     uprintf("start_connection state:%d, slot:%d\n", current_state, slot);
     switch (current_state) {
         case STATE_INITIAL:
@@ -56,6 +62,7 @@ bool start_connection(int slot) {
             break;
     }
 
+    current_slot = slot;
     TaskArgs args;
     args.current_slot = slot;
     args.received_command = NULL;
@@ -65,6 +72,9 @@ bool start_connection(int slot) {
 }
 
 bool start_disconnection(void) {
+    if (current_state == STATE_SLEEPING) {
+        return send_wakeup();
+    }
     uprintf("start_disconnection state:%d\n", current_state);
     switch (current_state) {
         case STATE_INITIAL:
@@ -79,8 +89,28 @@ bool start_disconnection(void) {
     run_task(task);
     return true;
 }
+bool reconnect_last_slot(void) {
+    coroutine_t task = co_create(start_reconnection_last_slot_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+    return true;
+}
+
+bool enable_auto_sleep(void) {
+    coroutine_t task = co_create(enable_auto_idle_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+    return true;
+}
+
+bool deepsleep(void) {
+    coroutine_t task = co_create(start_deepsleep_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+    return true;
+}
 
 bool send_basic_keycodes(report_keyboard_t *report) {
+    if (current_state == STATE_SLEEPING) {
+        return send_wakeup();
+    }
     if (current_state != STATE_CONNECTED) {
         return false;
     }
@@ -103,6 +133,9 @@ bool send_basic_keycodes(report_keyboard_t *report) {
 }
 
 bool send_mouse_keycodes(report_mouse_t *report) {
+    if (current_state == STATE_SLEEPING) {
+        return send_wakeup();
+    }
     if (current_state != STATE_CONNECTED) {
         return false;
     }
@@ -128,6 +161,9 @@ bool send_mouse_keycodes(report_mouse_t *report) {
 }
 
 bool send_consumer_keycodes(uint16_t usage) {
+    if (current_state == STATE_SLEEPING) {
+        return send_wakeup();
+    }
     if (current_state != STATE_CONNECTED) {
         return false;
     }
@@ -146,7 +182,7 @@ bool send_consumer_keycodes(uint16_t usage) {
 
 enum BtCommState initial_state(enum BtCommEvent event) {
     switch (event) {
-        case MODULE_PREPARED:
+        case MODULE_WAKED_UP:
             start_initialization();
             return STATE_INITIALIZING;
         case INITIALIZE_COMPLETED:
@@ -173,6 +209,8 @@ enum BtCommState idle_state(enum BtCommEvent event) {
             return STATE_CONNECTED;
         case CONNECTION_STARTED:
             return STATE_CONNECTING;
+        case MODULE_SLEPT:
+            return STATE_SLEEPING;
         default:
             return STATE_IDLE;
     }
@@ -188,6 +226,8 @@ enum BtCommState pairing_state(enum BtCommEvent event) {
             return STATE_DISCONNECTING;
         case DISCONNECTED:
             return STATE_IDLE;
+        case MODULE_SLEPT:
+            return STATE_SLEEPING;
         default:
             return STATE_PAIRING;
     }
@@ -203,6 +243,8 @@ enum BtCommState connecting_state(enum BtCommEvent event) {
             return STATE_DISCONNECTING;
         case DISCONNECTED:
             return STATE_IDLE;
+        case MODULE_SLEPT:
+            return STATE_SLEEPING;
         default:
             return STATE_CONNECTING;
     }
@@ -218,6 +260,8 @@ enum BtCommState connected_state(enum BtCommEvent event) {
             return STATE_DISCONNECTING;
         case DISCONNECTED:
             return STATE_IDLE;
+        case MODULE_SLEPT:
+            return STATE_SLEEPING;
         default:
             return STATE_CONNECTED;
     }
@@ -236,14 +280,24 @@ enum BtCommState disconnecting_state(enum BtCommEvent event) {
     }
 }
 
-enum BtCommState (*handler[7])(enum BtCommEvent) = {
+enum BtCommState sleeping_state(enum BtCommEvent event) {
+    switch (event) {
+        case MODULE_WAKED_UP:
+            return STATE_IDLE;
+        default:
+            return STATE_SLEEPING;
+    }
+}
+
+enum BtCommState (*handler[8])(enum BtCommEvent) = {
     initial_state,
     initializing_state,
     idle_state,
     pairing_state,
     connecting_state,
     connected_state,
-    disconnecting_state
+    disconnecting_state,
+    sleeping_state
 };
 
 enum BtCommState handle_event(enum BtCommEvent event) {
@@ -262,7 +316,9 @@ enum BtCommEvent to_event(const uint8_t* received_command) {
     } else if (is_expected_notification(received_command, COMMAND_EVENT, "0010")) {
         return DISCONNECTED;
     } else if (is_expected_notification(received_command, COMMAND_EVENT, "0020")) {
-        return MODULE_PREPARED;
+        return MODULE_WAKED_UP;
+    } else if (is_expected_notification(received_command, COMMAND_EVENT, "0040")) {
+        return MODULE_SLEPT;
     } else {
         return UNKNOWN;
     }

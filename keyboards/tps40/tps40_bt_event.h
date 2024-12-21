@@ -5,11 +5,12 @@ enum BtCommEvent {
 
     // Events from BT module
     MODULE_BOOTED,
-    MODULE_PREPARED,
     PAIRING_STARTED,
     CONNECTED,
     CONNECTION_STARTED,
     DISCONNECTED,
+    MODULE_WAKED_UP,
+    MODULE_SLEPT,
 
     // Inner events
     UNEXPECTED_COMMAND_RECEIVED,
