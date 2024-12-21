@@ -140,26 +140,6 @@ int start_connection_task(coroutine_t coroutine) {
 
     switch (slot) {
         case 1:
-            send_write_command(COMMAND_SELECTED_DEVICE, "1");
-            break;
-        case 2:
-            send_write_command(COMMAND_SELECTED_DEVICE, "2");
-            break;
-        case 3:
-            send_write_command(COMMAND_SELECTED_DEVICE, "3");
-            break;
-        default:
-            return false;
-    }
-
-    co_yield();
-
-    if (!is_success_response(received_command)) {
-        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
-    }
-
-    switch (slot) {
-        case 1:
             send_write_command(COMMAND_CONNECT, "1");
             break;
         case 2:
@@ -240,6 +220,7 @@ int start_deepsleep_task(coroutine_t coroutine) {
     co_end_ret(UNKNOWN);
 }
 
+#define SLOT_INDEX 10
 int start_reconnection_last_slot_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
     const uint8_t* received_command = args->received_command;
@@ -256,9 +237,9 @@ int start_reconnection_last_slot_task(coroutine_t coroutine) {
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
     }
 
-    // +KEYBOARD:[?]
-    uint8_t last_connected_slot = received_command[10];
-    uprintf("last connected slot: %c\n", last_connected_slot);
+    // 0 1 2 3 4 5 6 7 8 9 10
+    // + K E Y B O A R D : ??
+    uint8_t last_connected_slot = received_command[SLOT_INDEX];
     switch (last_connected_slot) {
         case '1':
             send_write_command(COMMAND_CONNECT, "1");
@@ -271,7 +252,6 @@ int start_reconnection_last_slot_task(coroutine_t coroutine) {
             break;
         default:
             co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
-
     }
 
     co_yield();
@@ -281,4 +261,34 @@ int start_reconnection_last_slot_task(coroutine_t coroutine) {
     }
 
     co_end_ret(CONNECTION_STARTED);
+}
+
+int set_selected_slot_task(coroutine_t coroutine) {
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    int slot = args->current_slot;
+    const uint8_t* received_command = args->received_command;
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    switch (slot) {
+        case 1:
+            send_write_command(COMMAND_SELECTED_DEVICE, "1");
+            break;
+        case 2:
+            send_write_command(COMMAND_SELECTED_DEVICE, "2");
+            break;
+        case 3:
+            send_write_command(COMMAND_SELECTED_DEVICE, "3");
+            break;
+        default:
+            return false;
+    }
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(UNKNOWN);
 }

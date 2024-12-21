@@ -89,8 +89,18 @@ bool start_disconnection(void) {
     run_task(task);
     return true;
 }
+
 bool reconnect_last_slot(void) {
     coroutine_t task = co_create(start_reconnection_last_slot_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+    return true;
+}
+
+bool memorize_current_slot(void) {
+    TaskArgs args;
+    args.current_slot = current_slot;
+    args.received_command = NULL;
+    coroutine_t task = co_create(set_selected_slot_task, &args, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
     return true;
 }
@@ -206,6 +216,7 @@ enum BtCommState idle_state(enum BtCommEvent event) {
         case PAIRING_STARTED:
             return STATE_PAIRING;
         case CONNECTED:
+            memorize_current_slot();
             return STATE_CONNECTED;
         case CONNECTION_STARTED:
             return STATE_CONNECTING;
@@ -219,6 +230,7 @@ enum BtCommState idle_state(enum BtCommEvent event) {
 enum BtCommState pairing_state(enum BtCommEvent event) {
     switch (event) {
         case CONNECTED:
+            memorize_current_slot();
             return STATE_CONNECTED;
         case CONNECTION_STARTED:
             return STATE_CONNECTING;
@@ -359,7 +371,7 @@ static THD_FUNCTION(ReadThread, arg) {
 
     event_listener_t el;
     eventflags_t flags;
-    chEvtRegisterMaskWithFlags(chnGetEventSource(&SD2), &el, EVENT_MASK(0), CHN_INPUT_AVAILABLE);
+    chEvtRegisterMaskWithFlags(chnGetEventSource(&SERIAL_USART_DRIVER), &el, EVENT_MASK(0), CHN_INPUT_AVAILABLE);
     while (true) {
         chEvtWaitAny(EVENT_MASK(0));
     	flags = chEvtGetAndClearFlags(&el);
