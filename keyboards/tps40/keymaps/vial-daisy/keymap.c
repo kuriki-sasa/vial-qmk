@@ -90,10 +90,20 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 bool led_update_user(led_t led_state) {
-    set_led_state(0, led_state.caps_lock);
+    //set_led_state(0, led_state.caps_lock);
     return false;
 }
 
 void battery_state_updated(enum BatteryState state) {
     uprintf("battery state: %d\n", state);
+    switch (state) {
+        case LEVEL_LOW:
+        case LEVEL_MID:
+        case LEVEL_HIGH:
+            set_led_state(0, false);
+            break;
+        case CHARGING:
+            set_led_state(0, true);
+            break;
+    }
 }

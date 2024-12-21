@@ -37,3 +37,8 @@
  * ADC settings
  */
  #define ADC_RESOLUTION ADC_CFGR1_RES_12BIT
+
+/*
+ * Battery monitoring
+ */
+ #define CHARGE_STATE_PIN A0

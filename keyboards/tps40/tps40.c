@@ -10,12 +10,11 @@
 
 void keyboard_pre_init_kb(void) {
     initialize_led();
-    //start_control();
     set_output(OUTPUT_BLUETOOTH);
 }
 
 void keyboard_post_init_kb(void) {
-    //start_battery_monitoring();
+    start_battery_monitoring();
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -61,18 +60,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         //     uprintf("%02x ", buffer[i]);
         // }
         // print("\n");
-        int LPRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_LPRSTF);
-        int WWDTRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_WWDTRSTF);
-        int WDTRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_WDTRSTF);
-        int SWRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_SWRSTF);
-        int PORRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_PORRSTF);
-        int NRSTF = (CRM->CTRLSTS & CRM_CTRLSTS_NRSTF);
-        uprintf("lpr: %d, wwdt: %d, wdt: %d, swr: %d, por: %d, nrst:%d\n", LPRSTF, WWDTRSTF, WDTRSTF, SWRSTF, PORRSTF, NRSTF);
-        deepsleep();
         //start_discovering(1);
+        uprintf("status: %d\n", (PWC->CTRLSTS & PWC_CTRL_BPWEN) != 0);
     } else if (record->event.pressed && keycode == KC_S) {
         print("=== start connection ====\n");
-        tps40_wakeup_frame_send();
+        start_discovering(2);
     } else if (record->event.pressed && keycode == KC_D) {
         print("=== start disconn ====\n");
         start_connection(1);
