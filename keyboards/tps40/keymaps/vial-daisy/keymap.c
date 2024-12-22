@@ -5,6 +5,7 @@
 
 #include "tps40_led.h"
 #include "tps40_battery_monitoring.h"
+#include "tps40_usb_monitoring.h"
 
 #define _QWERTY 0
 #define _LWR 1
@@ -106,4 +107,8 @@ void battery_state_updated(enum BatteryState state) {
             set_led_state(0, true);
             break;
     }
+}
+
+void usb_connection_state_updated(bool connected) {
+    set_led_state(1, connected);
 }

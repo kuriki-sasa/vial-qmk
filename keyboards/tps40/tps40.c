@@ -4,6 +4,7 @@
 
 #include "tps40_led.h"
 #include "tps40_battery_monitoring.h"
+#include "tps40_usb_monitoring.h"
 #include "tps40_usart.h"
 #include "tps40_bt_communication.h"
 #include "tps40_bt_controller.h"
@@ -15,6 +16,7 @@ void keyboard_pre_init_kb(void) {
 
 void keyboard_post_init_kb(void) {
     start_battery_monitoring();
+    start_usb_monitoring();
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
