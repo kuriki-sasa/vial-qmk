@@ -22,7 +22,8 @@
 
 #define BATTERY_MID_THRESHOLD 775
 #define BATTERY_LOW_THRESHOLD 682
-#define BATTERY_CHECK_INTERVAL_SEC 5
+#define BATTERY_CHECK_INTERVAL_SEC 60
+#define REENABLE_BATTERY_EVENT_TIME_MSEC TIME_MS2I(50)
 
 static void update_battery_state(void);
 static bool update_charging_state(void);
@@ -78,7 +79,7 @@ static void disable_charge_state_event(void) {
 static virtual_timer_t reenable_event_timer;
 static void set_reenable_event_timer(void) {
     chVTResetI(&reenable_event_timer);
-    chVTDoSetI(&reenable_event_timer, TIME_MS2I(50), reenable_event_timer_callback, NULL);
+    chVTDoSetI(&reenable_event_timer, REENABLE_BATTERY_EVENT_TIME_MSEC, reenable_event_timer_callback, NULL);
 }
 
 static void reenable_event_timer_callback(virtual_timer_t *vtp, void *p) {
