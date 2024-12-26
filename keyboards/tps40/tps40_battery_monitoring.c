@@ -4,11 +4,12 @@
 #include "analog.h"
 #include "print.h"
 
-// C3ピンの最大電圧: 0.7 (バッテリー電圧4.2Vのときに計測)
-// C3ピンの最少電圧: 0.55
-// AT32F415は3.3V駆動なので、4.2Vと0.7Vの比率からバッテリー電圧3.3V時のC3ピン電圧を計算
+// 150kΩ, 30kΩで分圧
+// Vo = (30 / 30 + 150) * Vi
+// バッテリー電圧が4.2Vのとき: 0.7V
+// バッテリー電圧が3.4Vのとき: 0.57
 
-// GPIOの入力上限3.3Vを12bitの分解能最大値4095で割り、係数を出す
+// Vref+実測 3.3Vを12bitの分解能最大値4095で割り、分解能1あたりので電圧を計算
 // 3.3 / 4095 = 0.00080586
 
 // このことから最大電圧のときのADCから読み取れる値は
@@ -17,11 +18,11 @@
 // 誤差はあるが高めに出ていて安全側に振れているのでOK
 
 // 最少電圧のときの予測計測値は
-// 0.55 / 0.00080586 = 682
-// 682でLow通知が出せれば安全
+// 0.57 / 0.00080586 = 707
+// 707でLow通知が出せれば安全
 
-#define BATTERY_MID_THRESHOLD 775
-#define BATTERY_LOW_THRESHOLD 682
+#define BATTERY_MID_THRESHOLD 788
+#define BATTERY_LOW_THRESHOLD 707
 #define BATTERY_CHECK_INTERVAL_SEC 60
 #define REENABLE_BATTERY_EVENT_TIME_MSEC TIME_MS2I(50)
 
@@ -102,7 +103,7 @@ static THD_WORKING_AREA(waBatteryThread, 2048);
 static THD_FUNCTION(BatteryThread, arg) {
     chRegSetThreadName("battery_monitoring");
 
-    palSetLineMode(CHARGE_STATE_PIN, PAL_MODE_INPUT);
+    palSetLineMode(CHARGE_STATE_PIN, PAL_MODE_INPUT_PULLUP);
     enable_charge_state_event();
 
     update_battery_level();
@@ -117,6 +118,6 @@ static THD_FUNCTION(BatteryThread, arg) {
 }
 
 void start_battery_monitoring(void) {
-    chThdCreateStatic(waBatteryThread, sizeof(waBatteryThread), NORMALPRIO + 8, BatteryThread, NULL);
+    chThdCreateStatic(waBatteryThread, sizeof(waBatteryThread), BATTERY_MONITORING_THREAD_PRIORITY, BatteryThread, NULL);
 }
 

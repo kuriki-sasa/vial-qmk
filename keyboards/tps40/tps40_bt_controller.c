@@ -389,7 +389,7 @@ static THD_FUNCTION(ReadThread, arg) {
 }
 
 void start_control(void) {
-    chThdCreateStatic(waReadThread, sizeof(waReadThread), NORMALPRIO + 32, ReadThread, NULL);
+    chThdCreateStatic(waReadThread, sizeof(waReadThread), COMMUNICATION_THREAD_PRIORITY, ReadThread, NULL);
     start_communication();
 }
 

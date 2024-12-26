@@ -99,12 +99,15 @@ void battery_state_updated(enum BatteryState state) {
     uprintf("battery state: %d\n", state);
     switch (state) {
         case LEVEL_LOW:
+            set_led_state(0, BLINK_FAST);
         case LEVEL_MID:
+            set_led_state(0, BLINK_MID);
+            break;
         case LEVEL_HIGH:
-            set_led_state(0, false);
+            set_led_state(0, ON);
             break;
         case CHARGING:
-            set_led_state(0, true);
+            set_led_state(0, BLINK_SLOW);
             break;
     }
 }

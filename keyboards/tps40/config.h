@@ -47,3 +47,19 @@
  * usb connection monitoring
  */
 #define VBUS_PIN         A9
+
+/*
+ * LED blink interval
+ */
+#define BLINK_SLOW_INTERVAL_MSEC 1000
+#define BLINK_MID_INTERVAL_MSEC   600
+#define BLINK_FAST_INTERVAL_MSEC  200
+
+/*
+ * Thread priority management
+ */
+#define LED_BLINK_SLOW_THREAD_PRIORITY     NORMALPRIO + 1
+#define LED_BLINK_MID_THREAD_PRIORITY      NORMALPRIO + 2
+#define LED_BLINK_FAST_THREAD_PRIORITY     NORMALPRIO + 3
+#define BATTERY_MONITORING_THREAD_PRIORITY NORMALPRIO + 16
+#define COMMUNICATION_THREAD_PRIORITY      NORMALPRIO + 32

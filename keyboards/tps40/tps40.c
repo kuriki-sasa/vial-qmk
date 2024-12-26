@@ -62,18 +62,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         //     uprintf("%02x ", buffer[i]);
         // }
         // print("\n");
-        //start_discovering(1);
-        uprintf("status: %d\n", (PWC->CTRLSTS & PWC_CTRL_BPWEN) != 0);
+        start_discovering(1);
+        set_led_state(0, BLINK_SLOW);
+        set_led_state(1, BLINK_SLOW);
+        set_led_state(2, BLINK_SLOW);
     } else if (record->event.pressed && keycode == KC_S) {
         print("=== start connection ====\n");
-        start_discovering(2);
+        start_disconnection();
+        set_led_state(0, BLINK_FAST);
+        set_led_state(1, BLINK_MID);
+        set_led_state(2, BLINK_MID);
     } else if (record->event.pressed && keycode == KC_D) {
         print("=== start disconn ====\n");
         start_connection(1);
     } else if (record->event.pressed && keycode == KC_F) {
         start_connection(2);
     } else if (record->event.pressed && keycode == KC_G) {
-        reconnect_last_slot();
+        set_led_state(0, BLINK_SLOW);
+        set_led_state(1, BLINK_MID);
+        set_led_state(2, BLINK_FAST);
     }
 
     uprintf("KL: kc: 0x%04X, mod: 0x%02X, col: %2u, row: %2u, pressed: %u, time: %5u, int: %u, count: %u\n", keycode, get_mods(), record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
