@@ -8,11 +8,11 @@
         "bootmagic": true,
         "encoder": true,
         "command": false,
-        "console": true,
-        "extrakey": false,
-        "mousekey": false,
-        "nkro": false,
-        "bluetooth": true
+        "extrakey": true,
+        "mousekey": true,
+        "nkro": true,
+        "bluetooth": true,
+        "console": false
     },
     "matrix_pins": {
         "custom": true,
