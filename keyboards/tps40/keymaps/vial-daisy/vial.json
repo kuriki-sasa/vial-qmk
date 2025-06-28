@@ -4,6 +4,53 @@
         "rows": 5,
         "cols": 12
     },
+    "customKeycodes": [
+      {
+        "name": "Deep Sleep",
+        "title": "Keyboard into Deep Sleep",
+        "shortName": "Deep\nSleep"
+      },
+      {
+        "name": "Pairing Bluetooth 1",
+        "title": "Enter pairing 1",
+        "shortName": "Pair 1"
+      },
+      {
+        "name": "Pairing Bluetooth 2",
+        "title": "Enter pairing 2",
+        "shortName": "Pair 2"
+      },
+      {
+        "name": "Pairing Bluetooth 3",
+        "title": "Enter pairing 3",
+        "shortName": "Pair 3"
+      },
+      {
+        "name": "Bluetooth 1",
+        "title": "Bluetooth working connection 1",
+        "shortName": "BT 1"
+      },
+      {
+        "name": "Bluetooth 2",
+        "title": "Bluetooth working connection 2",
+        "shortName": "BT 2"
+      },
+      {
+        "name": "Bluetooth 3",
+        "title": "Bluetooth working connection 3",
+        "shortName": "BT 3"
+      },
+      {
+        "name": "Disconnect Bluetooth",
+        "title": "Disconnect current Bluetooth connection",
+        "shortName": "Disco.\nBT"
+      },
+      {
+        "name": "Toggle LED mode",
+        "title": "Change LED indication mode",
+        "shortName": "LED\nmode"
+      }
+    ],
     "layouts": {
         "keymap":[
             [

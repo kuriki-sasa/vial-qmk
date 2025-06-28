@@ -15,12 +15,14 @@
         "bluetooth": true
     },
     "matrix_pins": {
+        "custom": true,
+        "custom_lite": true,
         "cols": ["A10", "F6", "F7", "C12", "D2", "B3", "B4", "B5", "B8", "B9", "C13", "C14"],
         "rows": ["B1", "C9", "A15", "B0", "C5"]
     },
     "encoder": {
         "rotary": [
-                { "pin_a": "C11", "pin_b": "C10", "resolution": 4 }
+            { "pin_a": "C11", "pin_b": "C10", "resolution": 4 }
         ]
     },
     "bluetooth": {

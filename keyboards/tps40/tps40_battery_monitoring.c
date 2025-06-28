@@ -121,3 +121,6 @@ void start_battery_monitoring(void) {
     chThdCreateStatic(waBatteryThread, sizeof(waBatteryThread), BATTERY_MONITORING_THREAD_PRIORITY, BatteryThread, NULL);
 }
 
+enum BatteryState get_current_battery_state(void) {
+    return current_state;
+}

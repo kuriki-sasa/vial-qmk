@@ -51,6 +51,6 @@ void start_usb_monitoring(void) {
     usb_connection_state_updated(current_connection_state);
 }
 
-bool is_connected(void) {
+bool is_usb_connected(void) {
     return current_connection_state;
 }

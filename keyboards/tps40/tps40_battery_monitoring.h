@@ -10,3 +10,4 @@ enum BatteryState {
 void battery_state_updated(enum BatteryState state);
 
 void start_battery_monitoring(void);
+enum BatteryState get_current_battery_state(void);

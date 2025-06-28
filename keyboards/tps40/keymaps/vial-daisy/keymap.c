@@ -3,9 +3,9 @@
 
 #include QMK_KEYBOARD_H
 
-#include "tps40_led.h"
 #include "tps40_battery_monitoring.h"
 #include "tps40_usb_monitoring.h"
+#include "tps40_led_controller.h"
 
 #define _QWERTY 0
 #define _LWR 1
@@ -71,47 +71,63 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     layer_state_t computed = update_tri_layer_state(state, _LWR, _RSE, _ADJ);
     switch (get_highest_layer(computed)) {
         case _LWR:
-            set_led_state(1, true);
-            set_led_state(2, false);
+            set_layer_indicator(LAYER_IND_LOWER);
             break;
         case _RSE:
-            set_led_state(1, false);
-            set_led_state(2, true);
+            set_layer_indicator(LAYER_IND_RAISE);
             break;
         case _ADJ:
-            set_led_state(1, true);
-            set_led_state(2, true);
+            set_layer_indicator(LAYER_IND_ADJUST);
             break;
         default:
-            set_led_state(1, false);
-            set_led_state(2, false);
+            set_layer_indicator(LAYER_IND_QWERTY);
             break;
     }
     return computed;
 }
 
 bool led_update_user(led_t led_state) {
-    //set_led_state(0, led_state.caps_lock);
+    set_caps_indicator(led_state.caps_lock);
     return false;
 }
 
 void battery_state_updated(enum BatteryState state) {
-    uprintf("battery state: %d\n", state);
     switch (state) {
         case LEVEL_LOW:
-            set_led_state(0, BLINK_FAST);
+            set_battery_indicator(BAT_IND_LOW);
+            break;
         case LEVEL_MID:
-            set_led_state(0, BLINK_MID);
+            set_battery_indicator(BAT_IND_MID);
             break;
         case LEVEL_HIGH:
-            set_led_state(0, ON);
+            set_battery_indicator(BAT_IND_HIGH);
             break;
         case CHARGING:
-            set_led_state(0, BLINK_SLOW);
+            set_battery_indicator(BAT_IND_CHARGING);
             break;
+    }
+    if (is_usb_connected()) {
+        set_battery_indicator(BAT_IND_CHARGING);
     }
 }
 
 void usb_connection_state_updated(bool connected) {
-    set_led_state(1, connected);
+     if (connected) {
+        set_battery_indicator(BAT_IND_CHARGING);
+     } else {
+        switch (get_current_battery_state()) {
+            case LEVEL_LOW:
+                set_battery_indicator(BAT_IND_LOW);
+                break;
+            case LEVEL_MID:
+                set_battery_indicator(BAT_IND_MID);
+                break;
+            case LEVEL_HIGH:
+                set_battery_indicator(BAT_IND_HIGH);
+                break;
+            case CHARGING:
+                set_battery_indicator(BAT_IND_CHARGING);
+                break;
+        }
+     }
 }

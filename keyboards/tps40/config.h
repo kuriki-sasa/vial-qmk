@@ -28,10 +28,17 @@
 /*
  * BT settings
  */
-#define TPS40_WAIT_COMMAND_TIMEOUT_COUNT 2500000
-#define TPS40_BOARD_NAME "TPS-40-CE"
-#define TPS40_IDLETIMES 600
-#define TPS40_VIDPID "1EA71F46"
+#define TPS40_BOARD_NAME               "TPS-40-CE"
+#define TPS40_IDLETIMES_SEC                    600
+#define TPS40_VIDPID                    "1EA71F46"
+#define TPS40_WAKEUP_DELAY_MILLIS              100
+#define TPS40_WAKEUP_DELAY_INPUT_MILLIS         30
+
+/*
+ * Deep sleep settings
+ */
+#define TPS40_WAKEUP_KEY_OUTPUT_PIN             B1
+#define TPS40_WAKEUP_KEY_OBSERVE_PIN           A10
 
 /*
  * ADC settings
@@ -63,3 +70,6 @@
 #define LED_BLINK_FAST_THREAD_PRIORITY     NORMALPRIO + 3
 #define BATTERY_MONITORING_THREAD_PRIORITY NORMALPRIO + 16
 #define COMMUNICATION_THREAD_PRIORITY      NORMALPRIO + 32
+
+#define PWC_CTRL_VRSEL                   (0x1U << 0)
+#define PWC_CTRL_LPSEL                   (0x1U << 1)

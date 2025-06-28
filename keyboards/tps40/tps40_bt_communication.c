@@ -55,7 +55,7 @@ bool send_text(const uint8_t* command) {
 
 bool send_buffer(const uint8_t* command, const uint8_t length) {
     tps40_usart_send(command, length);
-    //uprintf("send: %s", command);
+    uprintf("send: %s", command);
     return true;
 }
 

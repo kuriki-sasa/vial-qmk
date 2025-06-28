@@ -5,12 +5,14 @@
 #include "tps40_bt_event.h"
 #include "tps40_bt_communication.h"
 
-int initialize_task(coroutine_t coroutine) {
+int preparation_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
     const uint8_t* received_command = args->received_command;
     //uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
 
     co_begin_rettype(coroutine, enum BtCommEvent);
+
+    send_wakeup();
 
     // Send initial "AT" command
     send_run_command();
@@ -98,7 +100,7 @@ int initialize_task(coroutine_t coroutine) {
     send_write_command(COMMAND_AUTOEVENT_SETTINGS, ENABLE);
 
     print("Initial sequece: completed!\n");
-    co_end_ret(INITIALIZE_COMPLETED);
+    co_end_ret(PREPARATION_COMPLETED);
 }
 
 int start_discovering_task(coroutine_t coroutine) {
@@ -110,17 +112,25 @@ int start_discovering_task(coroutine_t coroutine) {
 
     switch (slot) {
         case 1:
-            send_write_command(COMMAND_DISCOVER, "1");
+            send_write_command(COMMAND_SELECTED_DEVICE, "1");
             break;
         case 2:
-            send_write_command(COMMAND_DISCOVER, "2");
+            send_write_command(COMMAND_SELECTED_DEVICE, "2");
             break;
         case 3:
-            send_write_command(COMMAND_DISCOVER, "3");
+            send_write_command(COMMAND_SELECTED_DEVICE, "3");
             break;
         default:
             return false;
     }
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    send_write_command(COMMAND_DISCOVER, "2");
 
     co_yield();
 
@@ -140,17 +150,25 @@ int start_connection_task(coroutine_t coroutine) {
 
     switch (slot) {
         case 1:
-            send_write_command(COMMAND_CONNECT, "1");
+            send_write_command(COMMAND_SELECTED_DEVICE, "1");
             break;
         case 2:
-            send_write_command(COMMAND_CONNECT, "2");
+            send_write_command(COMMAND_SELECTED_DEVICE, "2");
             break;
         case 3:
-            send_write_command(COMMAND_CONNECT, "3");
+            send_write_command(COMMAND_SELECTED_DEVICE, "3");
             break;
         default:
             return false;
     }
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    send_write_command(COMMAND_CONNECT, "3");
 
     co_yield();
 
@@ -184,7 +202,7 @@ int enable_auto_idle_task(coroutine_t coroutine) {
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 
-    send_write_command(COMMAND_IDLETIMES_SETTINGS, TO_STR_HELPER(TPS40_IDLETIMES));
+    send_write_command(COMMAND_IDLETIMES_SETTINGS, TO_STR_HELPER(TPS40_IDLETIMES_SEC));
 
     co_yield();
 
@@ -203,7 +221,7 @@ int enable_auto_idle_task(coroutine_t coroutine) {
     co_end_ret(UNKNOWN);
 }
 
-int start_deepsleep_task(coroutine_t coroutine) {
+int enter_deepsleep_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
     const uint8_t* received_command = args->received_command;
 
@@ -217,7 +235,7 @@ int start_deepsleep_task(coroutine_t coroutine) {
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
     }
 
-    co_end_ret(UNKNOWN);
+    co_end_ret(ENTER_DEEP_SLEEP_BY_USER);
 }
 
 #define SLOT_INDEX 10
@@ -237,22 +255,7 @@ int start_reconnection_last_slot_task(coroutine_t coroutine) {
         co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
     }
 
-    // 0 1 2 3 4 5 6 7 8 9 10
-    // + K E Y B O A R D : ??
-    uint8_t last_connected_slot = received_command[SLOT_INDEX];
-    switch (last_connected_slot) {
-        case '1':
-            send_write_command(COMMAND_CONNECT, "1");
-            break;
-        case '2':
-            send_write_command(COMMAND_CONNECT, "2");
-            break;
-        case '3':
-            send_write_command(COMMAND_CONNECT, "3");
-            break;
-        default:
-            co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
-    }
+    send_write_command(COMMAND_CONNECT, "3");
 
     co_yield();
 
@@ -261,34 +264,4 @@ int start_reconnection_last_slot_task(coroutine_t coroutine) {
     }
 
     co_end_ret(CONNECTION_STARTED);
-}
-
-int set_selected_slot_task(coroutine_t coroutine) {
-    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
-    int slot = args->current_slot;
-    const uint8_t* received_command = args->received_command;
-
-    co_begin_rettype(coroutine, enum BtCommEvent);
-
-    switch (slot) {
-        case 1:
-            send_write_command(COMMAND_SELECTED_DEVICE, "1");
-            break;
-        case 2:
-            send_write_command(COMMAND_SELECTED_DEVICE, "2");
-            break;
-        case 3:
-            send_write_command(COMMAND_SELECTED_DEVICE, "3");
-            break;
-        default:
-            return false;
-    }
-
-    co_yield();
-
-    if (!is_success_response(received_command)) {
-        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
-    }
-
-    co_end_ret(UNKNOWN);
 }

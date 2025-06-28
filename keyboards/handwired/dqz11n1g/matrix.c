@@ -101,7 +101,7 @@ bool matrix_read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
 
     /* Unselect row & wait for all columns signals to go high. */
     unselect_row(current_row);
-    matrix_output_unselect_delay(current_row, current_row_value != 0); 
+    matrix_output_unselect_delay(current_row, current_row_value != 0);
 
     /* Update row in matrix. */
     if (current_row_value != current_matrix[current_row]) {
@@ -117,7 +117,7 @@ bool matrix_scan_custom(matrix_row_t curr_matrix[]) {
 
     /* set row, read cols */
     for (uint8_t current_row = 0; current_row < MATRIX_ROWS; current_row++) {
-        changed |= matrix_read_cols_on_row(curr_matrix, current_row);
+        changed |= (curr_matrix, current_row);
     }
 
     return changed;
