@@ -13,6 +13,7 @@ int start_connection_task(coroutine_t coroutine);
 int start_disconnection_task(coroutine_t coroutine);
 int start_reconnection_last_slot_task(coroutine_t coroutine);
 
+int disable_auto_idle_task(coroutine_t coroutine);
 int enable_auto_idle_task(coroutine_t coroutine);
 int enter_deepsleep_task(coroutine_t coroutine);
 

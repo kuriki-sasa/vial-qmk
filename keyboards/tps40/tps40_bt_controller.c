@@ -29,7 +29,7 @@ void run_task(coroutine_t task) {
 int coroutine_stack[128];
 void start_preparation(void) {
     current_state = STATE_PREPARING;
-    wait_ms(500);
+    wait_ms(1000);
     coroutine_t task = co_create(preparation_task, NULL, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
 }
@@ -37,11 +37,11 @@ void start_preparation(void) {
 void wakeup_before_command(void) {
     if (current_state == STATE_IDLE_SLEEPING) {
         send_wakeup();
-        wait_ms(TPS40_WAKEUP_DELAY_MILLIS);
+        wait_ms(TPS40_WAKEUP_DELAY_MSEC);
         current_state = STATE_IDLE;
     } else if (current_state == STATE_CONNECTED_SLEEPING) {
         send_wakeup();
-        wait_ms(TPS40_WAKEUP_DELAY_MILLIS);
+        wait_ms(TPS40_WAKEUP_DELAY_MSEC);
         current_state = STATE_CONNECTED;
     }
 }
@@ -49,11 +49,11 @@ void wakeup_before_command(void) {
 void wakeup_before_input(void) {
     if (current_state == STATE_IDLE_SLEEPING) {
         send_wakeup();
-        wait_ms(TPS40_WAKEUP_DELAY_INPUT_MILLIS);
+        wait_ms(TPS40_WAKEUP_DELAY_INPUT_MSEC);
         current_state = STATE_IDLE;
     } else if (current_state == STATE_CONNECTED_SLEEPING) {
         send_wakeup();
-        wait_ms(TPS40_WAKEUP_DELAY_INPUT_MILLIS);
+        wait_ms(TPS40_WAKEUP_DELAY_INPUT_MSEC);
         current_state = STATE_CONNECTED;
     }
 }
@@ -118,18 +118,32 @@ bool start_disconnection(void) {
 }
 
 bool reconnect_last_slot(void) {
+    wakeup_before_command();
+
     coroutine_t task = co_create(start_reconnection_last_slot_task, 0, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
     return true;
 }
 
 bool enable_auto_sleep(void) {
+    wakeup_before_command();
+
     coroutine_t task = co_create(enable_auto_idle_task, 0, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
     return true;
 }
 
+bool disable_auto_sleep(void) {
+    wakeup_before_command();
+
+    coroutine_t task = co_create(disable_auto_idle_task, 0, coroutine_stack, sizeof(coroutine_stack));
+    run_task(task);
+    return true;
+}
+
 void enter_deepsleep(void) {
+    wakeup_before_command();
+
     coroutine_t task = co_create(enter_deepsleep_task, NULL, coroutine_stack, sizeof(coroutine_stack));
     run_task(task);
 }
@@ -527,7 +541,6 @@ void start_control(void) {
 
 void bluetooth_init(void) {
     start_control();
-    send_wakeup();
     start_preparation();
 }
 
