@@ -7,6 +7,7 @@
 #include "bluetooth.h"
 #include "usb_main.h"
 #include "debounce.h"
+#include "outputselect.h"
 
 #include "tps40_matrix.h"
 #include "tps40_bt_tasks.h"
@@ -280,6 +281,7 @@ enum BtCommState idle_state(enum BtCommEvent event) {
             set_bluetooth_indicator(BT_IND_PAIRING);
             return STATE_PAIRING;
         case CONNECTED:
+            set_output(OUTPUT_BLUETOOTH);
             set_bluetooth_indicator(BT_IND_CONNECTED);
             return STATE_CONNECTED;
         case CONNECTION_STARTED:
@@ -298,6 +300,7 @@ enum BtCommState idle_state(enum BtCommEvent event) {
 enum BtCommState pairing_state(enum BtCommEvent event) {
     switch (event) {
         case CONNECTED:
+            set_output(OUTPUT_BLUETOOTH);
             set_bluetooth_indicator(BT_IND_CONNECTED);
             return STATE_CONNECTED;
         case CONNECTION_STARTED:
@@ -306,6 +309,7 @@ enum BtCommState pairing_state(enum BtCommEvent event) {
         case DISCONNECTION_STARTED:
             return STATE_DISCONNECTING;
         case DISCONNECTED:
+            set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
@@ -324,11 +328,13 @@ enum BtCommState connecting_state(enum BtCommEvent event) {
             set_bluetooth_indicator(BT_IND_PAIRING);
             return STATE_PAIRING;
         case CONNECTED:
+            set_output(OUTPUT_BLUETOOTH);
             set_bluetooth_indicator(BT_IND_CONNECTED);
             return STATE_CONNECTED;
         case DISCONNECTION_STARTED:
             return STATE_DISCONNECTING;
         case DISCONNECTED:
+            set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
         case MODULE_SLEPT:
@@ -350,6 +356,7 @@ enum BtCommState connected_state(enum BtCommEvent event) {
         case DISCONNECTION_STARTED:
             return STATE_DISCONNECTING;
         case DISCONNECTED:
+            set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
@@ -371,9 +378,11 @@ enum BtCommState disconnecting_state(enum BtCommEvent event) {
             set_bluetooth_indicator(BT_IND_CONNECTING);
             return STATE_CONNECTING;
         case CONNECTED:
+            set_output(OUTPUT_BLUETOOTH);
             set_bluetooth_indicator(BT_IND_CONNECTED);
             return STATE_CONNECTED;
         case DISCONNECTED:
+            set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
@@ -395,9 +404,11 @@ enum BtCommState idle_sleeping_state(enum BtCommEvent event) {
             set_bluetooth_indicator(BT_IND_CONNECTING);
             return STATE_CONNECTING;
         case CONNECTED:
+            set_output(OUTPUT_BLUETOOTH);
             set_bluetooth_indicator(BT_IND_CONNECTED);
             return STATE_CONNECTED;
         case DISCONNECTED:
+            set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
@@ -416,9 +427,11 @@ enum BtCommState connected_sleeping_state(enum BtCommEvent event) {
             set_bluetooth_indicator(BT_IND_CONNECTING);
             return STATE_CONNECTING;
         case CONNECTED:
+            set_output(OUTPUT_BLUETOOTH);
             set_bluetooth_indicator(BT_IND_CONNECTED);
             return STATE_CONNECTED;
         case DISCONNECTED:
+            set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
