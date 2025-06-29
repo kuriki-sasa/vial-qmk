@@ -1,156 +1,154 @@
 {
-    "lighting": "none",
-    "matrix": {
-        "rows": 5,
-        "cols": 12
+  "lighting": "none",
+  "matrix": {
+    "rows": 5,
+    "cols": 12
+  },
+  "customKeycodes": [
+    {
+      "name": "Deep Sleep",
+      "title": "Keyboard into Deep Sleep",
+      "shortName": "Deep\nSleep"
     },
-    "customKeycodes": [
-      {
-        "name": "Deep Sleep",
-        "title": "Keyboard into Deep Sleep",
-        "shortName": "Deep\nSleep"
-      },
-      {
-        "name": "Pairing Bluetooth 1",
-        "title": "Enter pairing 1",
-        "shortName": "Pair 1"
-      },
-      {
-        "name": "Pairing Bluetooth 2",
-        "title": "Enter pairing 2",
-        "shortName": "Pair 2"
-      },
-      {
-        "name": "Pairing Bluetooth 3",
-        "title": "Enter pairing 3",
-        "shortName": "Pair 3"
-      },
-      {
-        "name": "Bluetooth 1",
-        "title": "Bluetooth working connection 1",
-        "shortName": "BT 1"
-      },
-      {
-        "name": "Bluetooth 2",
-        "title": "Bluetooth working connection 2",
-        "shortName": "BT 2"
-      },
-      {
-        "name": "Bluetooth 3",
-        "title": "Bluetooth working connection 3",
-        "shortName": "BT 3"
-      },
-      {
-        "name": "Disconnect Bluetooth",
-        "title": "Disconnect current Bluetooth connection",
-        "shortName": "Disco.\nBT"
-      },
-      {
-        "name": "Toggle LED mode",
-        "title": "Change LED indication mode",
-        "shortName": "LED\nmode"
-      }
-    ],
-    "layouts": {
-        "keymap":[
-            [
-              "0,0\n\n\n\n\n\n\n\n\ne",
-              "0,0",
-              "0,1\n\n\n\n\n\n\n\n\ne",
-              {
-                "x": 9.25
-              },
-              "4,6"
-            ],
-            [
-              {
-                "x": 12.25
-              },
-              "4,7"
-            ],
-            [
-              {
-                "y": -0.75
-              },
-              "1,0",
-              "1,1",
-              "1,2",
-              "1,3",
-              "1,4",
-              "1,5",
-              "1,6",
-              "1,7",
-              "1,8",
-              "1,9",
-              "1,10",
-              "1,11"
-            ],
-            [
-              {
-                "w": 1.25
-              },
-              "2,0",
-              "2,1",
-              "2,2",
-              "2,3",
-              "2,4",
-              "2,5",
-              "2,6",
-              "2,7",
-              "2,8",
-              "2,9",
-              {
-                "w": 1.75
-              },
-              "2,11"
-            ],
-            [
-              {
-                "w": 1.75
-              },
-              "3,0",
-              "3,1",
-              "3,2",
-              "3,3",
-              "3,4",
-              "3,5",
-              "3,6",
-              "3,7",
-              "3,8",
-              {
-                "w": 1.25
-              },
-              "3,10",
-              "3,11"
-            ],
-            [
-              {
-                "w": 1.25
-              },
-              "4,0",
-              "4,1",
-              {
-                "w": 1.25
-              },
-              "4,2",
-              {
-                "w": 2.25
-              },
-              "4,4",
-              {
-                "w": 2.75
-              },
-              "4,5",
-              {
-                "w": 1.25
-              },
-              "4,9",
-              "4,10",
-              {
-                "w": 1.25
-              },
-              "4,11"
-            ]
-        ]
+    {
+      "name": "Pairing Bluetooth 1",
+      "title": "Enter pairing 1",
+      "shortName": "Pair 1"
+    },
+    {
+      "name": "Pairing Bluetooth 2",
+      "title": "Enter pairing 2",
+      "shortName": "Pair 2"
+    },
+    {
+      "name": "Pairing Bluetooth 3",
+      "title": "Enter pairing 3",
+      "shortName": "Pair 3"
+    },
+    {
+      "name": "Bluetooth 1",
+      "title": "Bluetooth working connection 1",
+      "shortName": "BT 1"
+    },
+    {
+      "name": "Bluetooth 2",
+      "title": "Bluetooth working connection 2",
+      "shortName": "BT 2"
+    },
+    {
+      "name": "Bluetooth 3",
+      "title": "Bluetooth working connection 3",
+      "shortName": "BT 3"
+    },
+    {
+      "name": "Disconnect Bluetooth",
+      "title": "Disconnect current Bluetooth connection",
+      "shortName": "Disco.\nBT"
+    },
+    {
+      "name": "Toggle LED mode",
+      "title": "Change LED indication mode",
+      "shortName": "LED\nmode"
     }
+  ],
+  "layouts": {
+    "keymap": [
+      [
+        {
+          "x": -1
+        },
+        "0,0\n\n\n\n\n\n\n\n\ne",
+        "0,0",
+        "0,1\n\n\n\n\n\n\n\n\ne",
+        {
+          "x": 8
+        },
+        "4,6",
+        "4,7"
+      ],
+      [
+        "1,0",
+        "1,1",
+        "1,2",
+        "1,3",
+        "1,4",
+        "1,5",
+        "1,6",
+        "1,7",
+        "1,8",
+        "1,9",
+        "1,10",
+        "1,11"
+      ],
+      [
+        {
+          "w": 1.25
+        },
+        "2,0",
+        "2,1",
+        "2,2",
+        "2,3",
+        "2,4",
+        "2,5",
+        "2,6",
+        "2,7",
+        "2,8",
+        "2,9",
+        {
+          "w": 1.75
+        },
+        "2,11"
+      ],
+      [
+        {
+          "w": 1.75
+        },
+        "3,0",
+        "3,1",
+        "3,2",
+        "3,3",
+        "3,4",
+        "3,5",
+        "3,6",
+        "3,7",
+        "3,8",
+        {
+          "w": 1.25
+        },
+        "3,10",
+        "3,11"
+      ],
+      [
+        {
+          "w": 1.25
+        },
+        "4,0",
+        {
+          "w": 1
+        },
+        "4,1",
+        {
+          "w": 1.25
+        },
+        "4,2",
+        {
+          "w": 2.25
+        },
+        "4,4",
+        {
+          "w": 2.75
+        },
+        "4,5",
+        {
+          "w": 1.25
+        },
+        "4,9",
+        "4,10",
+        {
+          "w": 1.25
+        },
+        "4,11"
+      ]
+    ]
+  }
 }
