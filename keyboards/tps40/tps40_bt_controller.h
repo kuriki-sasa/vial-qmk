@@ -28,6 +28,7 @@ bool start_connection(int slot);
 bool start_disconnection(void);
 bool reconnect_last_slot(void);
 
+bool disable_auto_sleep(void);
 bool enable_auto_sleep(void);
 bool deepsleep(void);
 void enter_deepsleep(void);

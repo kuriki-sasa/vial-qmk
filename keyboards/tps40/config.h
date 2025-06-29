@@ -31,8 +31,9 @@
 #define TPS40_BOARD_NAME               "TPS-40-CE"
 #define TPS40_IDLETIMES_SEC                    600
 #define TPS40_VIDPID                    "1EA71F46"
-#define TPS40_WAKEUP_DELAY_MILLIS              100
-#define TPS40_WAKEUP_DELAY_INPUT_MILLIS         30
+#define TPS40_WAKEUP_DELAY_MSEC                100
+#define TPS40_WAKEUP_DELAY_INPUT_MSEC           30
+#define TPS40_BT_COMMAND_INTERVAL_MSEC         100
 
 /*
  * Deep sleep settings
@@ -58,9 +59,10 @@
 /*
  * LED blink interval
  */
-#define BLINK_SLOW_INTERVAL_MSEC 1000
-#define BLINK_MID_INTERVAL_MSEC   600
-#define BLINK_FAST_INTERVAL_MSEC  200
+#define BLINK_THREAD_INTERVAL_MSEC 1000
+#define BLINK_SLOW_INTERVAL_MSEC   1000
+#define BLINK_MID_INTERVAL_MSEC     600
+#define BLINK_FAST_INTERVAL_MSEC    200
 
 /*
  * Thread priority management

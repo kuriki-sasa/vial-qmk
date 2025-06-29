@@ -1,5 +1,6 @@
 #include "tps40_bt_tasks.h"
 
+#include "quantum.h"
 #include "print.h"
 
 #include "tps40_bt_event.h"
@@ -8,11 +9,12 @@
 int preparation_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
     const uint8_t* received_command = args->received_command;
-    //uint8_t* received_command = (uint8_t*)co_get_addrword(coroutine);
 
     co_begin_rettype(coroutine, enum BtCommEvent);
 
     send_wakeup();
+
+    wait_ms(TPS40_WAKEUP_DELAY_MSEC);
 
     // Send initial "AT" command
     send_run_command();
@@ -52,7 +54,16 @@ int preparation_task(coroutine_t coroutine) {
     }
 
     // Set idle settings
-    send_write_command(COMMAND_AUTOIDLE_SETTINGS, DISABLE);
+    send_write_command(COMMAND_IDLETIMES_SETTINGS, TO_STR_HELPER(TPS40_IDLETIMES_SEC));
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        uprintf("Initial sequence: step6 failed! %s\n", received_command);
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    send_write_command(COMMAND_AUTOIDLE_SETTINGS, ENABLE);
 
     co_yield();
 
@@ -98,6 +109,16 @@ int preparation_task(coroutine_t coroutine) {
         co_exit();
     }
     send_write_command(COMMAND_AUTOEVENT_SETTINGS, ENABLE);
+
+    wait_ms(TPS40_BT_COMMAND_INTERVAL_MSEC);
+
+    send_run_command(COMMAND_DISCONNECT);
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
 
     print("Initial sequece: completed!\n");
     co_end_ret(PREPARATION_COMPLETED);
@@ -196,6 +217,23 @@ int start_disconnection_task(coroutine_t coroutine) {
     co_end_ret(DISCONNECTION_STARTED);
 }
 
+int disable_auto_idle_task(coroutine_t coroutine) {
+    TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
+    const uint8_t* received_command = args->received_command;
+
+    co_begin_rettype(coroutine, enum BtCommEvent);
+
+    send_write_command(COMMAND_AUTOIDLE_SETTINGS, DISABLE);
+
+    co_yield();
+
+    if (!is_success_response(received_command)) {
+        co_exit_ret(UNEXPECTED_COMMAND_RECEIVED);
+    }
+
+    co_end_ret(UNKNOWN);
+}
+
 int enable_auto_idle_task(coroutine_t coroutine) {
     TaskArgs* args = (TaskArgs*)co_get_addrword(coroutine);
     const uint8_t* received_command = args->received_command;
@@ -249,6 +287,7 @@ int start_reconnection_last_slot_task(coroutine_t coroutine) {
 
     co_yield();
 
+    uprintf("keyboard: %s\n", received_command);
     if (!is_expected_notification(received_command, COMMAND_SELECTED_DEVICE, "1") &&
         !is_expected_notification(received_command, COMMAND_SELECTED_DEVICE, "2") &&
         !is_expected_notification(received_command, COMMAND_SELECTED_DEVICE, "3")) {
