@@ -75,3 +75,5 @@
 
 #define PWC_CTRL_VRSEL                   (0x1U << 0)
 #define PWC_CTRL_LPSEL                   (0x1U << 1)
+
+#define GPIO_INPUT_PIN_DELAY (CPU_CLOCK / 1000000L / 18)
