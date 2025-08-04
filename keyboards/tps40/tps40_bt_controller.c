@@ -21,6 +21,19 @@
 int current_slot = 1;
 coroutine_t current_task = NULL;
 static enum BtCommState current_state = STATE_INITIAL;
+bool needsWakeup = false;
+
+static void wakeup_flag_timer_callback(virtual_timer_t *vtp, void *p) {
+    chSysLockFromISR();
+    needsWakeup = true;
+    chSysUnlockFromISR();
+}
+
+static virtual_timer_t wakeup_flag_timer;
+static void set_wakeup_flag_timer(void) {
+    chVTResetI(&wakeup_flag_timer);
+    chVTDoSetI(&wakeup_flag_timer, TIME_S2I(TPS40_IDLETIMES_SEC), wakeup_flag_timer_callback, NULL);
+}
 
 void run_task(coroutine_t task) {
     current_task = task;
@@ -36,27 +49,23 @@ void start_preparation(void) {
 }
 
 void wakeup_before_command(void) {
-    if (current_state == STATE_IDLE_SLEEPING) {
+    if (needsWakeup) {
         send_wakeup();
         wait_ms(TPS40_WAKEUP_DELAY_MSEC);
-        current_state = STATE_IDLE;
-    } else if (current_state == STATE_CONNECTED_SLEEPING) {
-        send_wakeup();
-        wait_ms(TPS40_WAKEUP_DELAY_MSEC);
-        current_state = STATE_CONNECTED;
     }
+    needsWakeup = false;
+
+    set_wakeup_flag_timer();
 }
 
 void wakeup_before_input(void) {
-    if (current_state == STATE_IDLE_SLEEPING) {
+    if (needsWakeup) {
         send_wakeup();
         wait_ms(TPS40_WAKEUP_DELAY_INPUT_MSEC);
-        current_state = STATE_IDLE;
-    } else if (current_state == STATE_CONNECTED_SLEEPING) {
-        send_wakeup();
-        wait_ms(TPS40_WAKEUP_DELAY_INPUT_MSEC);
-        current_state = STATE_CONNECTED;
     }
+    needsWakeup = false;
+
+    set_wakeup_flag_timer();
 }
 
 bool start_discovering(int slot) {
@@ -289,9 +298,6 @@ enum BtCommState idle_state(enum BtCommEvent event) {
             return STATE_CONNECTING;
         case ENTER_DEEP_SLEEP_BY_USER:
             return STATE_DEEPSLEEP_BY_USER;
-        case MODULE_SLEPT:
-        case MODULE_DEEP_SLEPT:
-            return STATE_IDLE_SLEEPING;
         default:
             return STATE_IDLE;
     }
@@ -314,9 +320,6 @@ enum BtCommState pairing_state(enum BtCommEvent event) {
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
             return STATE_DEEPSLEEP_BY_USER;
-        case MODULE_SLEPT:
-        case MODULE_DEEP_SLEPT:
-            return STATE_IDLE_SLEEPING;
         default:
             return STATE_PAIRING;
     }
@@ -337,9 +340,6 @@ enum BtCommState connecting_state(enum BtCommEvent event) {
             set_output(OUTPUT_USB);
             set_bluetooth_indicator(BT_IND_IDLE);
             return STATE_IDLE;
-        case MODULE_SLEPT:
-        case MODULE_DEEP_SLEPT:
-            return STATE_IDLE_SLEEPING;
         default:
             return STATE_CONNECTING;
     }
@@ -361,9 +361,6 @@ enum BtCommState connected_state(enum BtCommEvent event) {
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
             return STATE_DEEPSLEEP_BY_USER;
-        case MODULE_SLEPT:
-        case MODULE_DEEP_SLEPT:
-            return STATE_CONNECTED_SLEEPING;
         default:
             return STATE_CONNECTED;
     }
@@ -387,59 +384,9 @@ enum BtCommState disconnecting_state(enum BtCommEvent event) {
             return STATE_IDLE;
         case ENTER_DEEP_SLEEP_BY_USER:
             return STATE_DEEPSLEEP_BY_USER;
-        case MODULE_SLEPT:
-        case MODULE_DEEP_SLEPT:
-            return STATE_IDLE_SLEEPING;
         default:
             return STATE_DISCONNECTING;
     }
-}
-
-enum BtCommState idle_sleeping_state(enum BtCommEvent event) {
-    switch (event) {
-        case PAIRING_STARTED:
-            set_bluetooth_indicator(BT_IND_PAIRING);
-            return STATE_PAIRING;
-        case CONNECTION_STARTED:
-            set_bluetooth_indicator(BT_IND_CONNECTING);
-            return STATE_CONNECTING;
-        case CONNECTED:
-            set_output(OUTPUT_BLUETOOTH);
-            set_bluetooth_indicator(BT_IND_CONNECTED);
-            return STATE_CONNECTED;
-        case DISCONNECTED:
-            set_output(OUTPUT_USB);
-            set_bluetooth_indicator(BT_IND_IDLE);
-            return STATE_IDLE;
-        case ENTER_DEEP_SLEEP_BY_USER:
-            return STATE_DEEPSLEEP_BY_USER;
-        default:
-            return STATE_IDLE_SLEEPING;
-    }
-}
-
-enum BtCommState connected_sleeping_state(enum BtCommEvent event) {
-    switch (event) {
-        case PAIRING_STARTED:
-            set_bluetooth_indicator(BT_IND_PAIRING);
-            return STATE_PAIRING;
-        case CONNECTION_STARTED:
-            set_bluetooth_indicator(BT_IND_CONNECTING);
-            return STATE_CONNECTING;
-        case CONNECTED:
-            set_output(OUTPUT_BLUETOOTH);
-            set_bluetooth_indicator(BT_IND_CONNECTED);
-            return STATE_CONNECTED;
-        case DISCONNECTED:
-            set_output(OUTPUT_USB);
-            set_bluetooth_indicator(BT_IND_IDLE);
-            return STATE_IDLE;
-        case ENTER_DEEP_SLEEP_BY_USER:
-            return STATE_DEEPSLEEP_BY_USER;
-        default:
-                return STATE_CONNECTED_SLEEPING;
-    }
-
 }
 
 enum BtCommState deepsleep_by_user_state(enum BtCommEvent event) {
@@ -460,8 +407,6 @@ enum BtCommState (*handler[10])(enum BtCommEvent) = {
     connecting_state,
     connected_state,
     disconnecting_state,
-    idle_sleeping_state,
-    connected_sleeping_state,
     deepsleep_by_user_state
 };
 
