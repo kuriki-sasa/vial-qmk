@@ -41,12 +41,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______
     ),
     [_ADJ] = LAYOUT(
-        XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,          XXXXXXX,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, XXXXXXX
+        _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______,          _______,          _______, _______, _______, _______,
+        _______, _______
     )
 };
 
@@ -68,8 +68,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 #endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    layer_state_t computed = update_tri_layer_state(state, _LWR, _RSE, _ADJ);
-    switch (get_highest_layer(computed)) {
+    switch (get_highest_layer(state)) {
         case _LWR:
             set_layer_indicator(LAYER_IND_LOWER);
             break;
@@ -83,7 +82,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             set_layer_indicator(LAYER_IND_QWERTY);
             break;
     }
-    return computed;
+    return state;
 }
 
 bool led_update_user(led_t led_state) {
