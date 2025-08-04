@@ -83,6 +83,10 @@ void set_layer_indicator(enum LayerIndicatorState state) {
 
 void set_battery_indicator(enum BatteryIndicatorState state) {
     switch (state) {
+        case BAT_IND_CHARGED:
+            connection_and_battery_states[0] = ON;
+            layer_states[0] = ON;
+            break;
         case BAT_IND_CHARGING:
             connection_and_battery_states[0] = BLINK_SLOW;
             layer_states[0] = BLINK_SLOW;
@@ -96,8 +100,8 @@ void set_battery_indicator(enum BatteryIndicatorState state) {
             layer_states[0] = ON;
             break;
         case BAT_IND_LOW:
-            connection_and_battery_states[0] = BLINK_FAST;
-            layer_states[0] = BLINK_FAST;
+            connection_and_battery_states[0] = BLINK_MID;
+            layer_states[0] = BLINK_MID;
             break;
     }
     update_led_by_current_mode();

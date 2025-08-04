@@ -1,13 +1,13 @@
 #pragma once
 
-enum BatteryState {
+enum BatteryLevel {
     LEVEL_LOW = 0,
     LEVEL_MID,
-    LEVEL_HIGH,
-    CHARGING
+    LEVEL_HIGH
 };
 
-void battery_state_updated(enum BatteryState state);
+void battery_state_updated(enum BatteryLevel level, bool charging);
 
 void start_battery_monitoring(void);
-enum BatteryState get_current_battery_state(void);
+enum BatteryLevel get_current_battery_level(void);
+bool is_charging(void);

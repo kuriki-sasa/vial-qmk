@@ -90,8 +90,8 @@ bool led_update_user(led_t led_state) {
     return false;
 }
 
-void battery_state_updated(enum BatteryState state) {
-    switch (state) {
+void battery_state_updated(enum BatteryLevel level, bool charging) {
+    switch (level) {
         case LEVEL_LOW:
             set_battery_indicator(BAT_IND_LOW);
             break;
@@ -101,20 +101,25 @@ void battery_state_updated(enum BatteryState state) {
         case LEVEL_HIGH:
             set_battery_indicator(BAT_IND_HIGH);
             break;
-        case CHARGING:
-            set_battery_indicator(BAT_IND_CHARGING);
-            break;
     }
     if (is_usb_connected()) {
-        set_battery_indicator(BAT_IND_CHARGING);
+        if (charging) {
+            set_battery_indicator(BAT_IND_CHARGING);
+        } else {
+            set_battery_indicator(BAT_IND_CHARGED);
+        }
     }
 }
 
 void usb_connection_state_updated(bool connected) {
      if (connected) {
-        set_battery_indicator(BAT_IND_CHARGING);
+        if (is_charging()) {
+            set_battery_indicator(BAT_IND_CHARGING);
+        } else {
+            set_battery_indicator(BAT_IND_CHARGED);
+        }
      } else {
-        switch (get_current_battery_state()) {
+        switch (get_current_battery_level()) {
             case LEVEL_LOW:
                 set_battery_indicator(BAT_IND_LOW);
                 break;
@@ -123,9 +128,6 @@ void usb_connection_state_updated(bool connected) {
                 break;
             case LEVEL_HIGH:
                 set_battery_indicator(BAT_IND_HIGH);
-                break;
-            case CHARGING:
-                set_battery_indicator(BAT_IND_CHARGING);
                 break;
         }
      }

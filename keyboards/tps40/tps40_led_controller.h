@@ -9,7 +9,8 @@ enum BatteryIndicatorState {
     BAT_IND_LOW = 0,
     BAT_IND_MID,
     BAT_IND_HIGH,
-    BAT_IND_CHARGING
+    BAT_IND_CHARGING,
+    BAT_IND_CHARGED
 };
 
 enum BluetoothIndicatorState {

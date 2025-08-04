@@ -26,23 +26,22 @@
 #define BATTERY_CHECK_INTERVAL_SEC 60
 #define REENABLE_BATTERY_EVENT_TIME_MSEC TIME_MS2I(50)
 
-static void update_battery_state(void);
-static bool update_charging_state(void);
 static void enable_charge_state_event(void);
 static void disable_charge_state_event(void);
 static void set_reenable_event_timer(void);
 static void reenable_event_timer_callback(virtual_timer_t *vtp, void *p);
 static void battery_pin_callback(void *arg);
 
-static bool is_charging;
+static bool charging;
 static int16_t last_battery_level;
-static enum BatteryState current_state;
+static enum BatteryLevel current_state;
 
-static void update_battery_state(void) {
-    enum BatteryState new_state;
-    if (is_charging) {
-        new_state = CHARGING;
-    } else if (last_battery_level > BATTERY_MID_THRESHOLD){
+static int16_t update_battery_level(void) {
+    last_battery_level = analogReadPin(C3);
+    uprintf("charging: %d  level: %d\n", charging, last_battery_level);
+
+    enum BatteryLevel new_state;
+    if (last_battery_level > BATTERY_MID_THRESHOLD){
         new_state = LEVEL_HIGH;
     } else if (last_battery_level > BATTERY_LOW_THRESHOLD) {
         new_state = LEVEL_MID;
@@ -52,19 +51,20 @@ static void update_battery_state(void) {
     uprintf("current_state: %d, new_state: %d\n", current_state, new_state);
     if (current_state != new_state) {
         current_state = new_state;
-        battery_state_updated(current_state);
+        battery_state_updated(current_state, charging);
     }
-}
 
-static int16_t update_battery_level(void) {
-    last_battery_level = analogReadPin(C3);
-    uprintf("charging: %d  level: %d\n", is_charging, last_battery_level);
     return last_battery_level;
 }
 
 static bool update_charging_state(void) {
-    is_charging = readPin(CHARGE_STATE_PIN) == false;
-    return is_charging;
+    bool new_state = readPin(CHARGE_STATE_PIN) == false;
+    if (charging != new_state) {
+        charging = new_state;
+        battery_state_updated(current_state, charging);
+    }
+
+    return charging;
 }
 
 
@@ -91,7 +91,6 @@ static void reenable_event_timer_callback(virtual_timer_t *vtp, void *p) {
 
 static void battery_pin_callback(void *arg) {
     update_charging_state();
-    update_battery_state();
 
     chSysLockFromISR();
     disable_charge_state_event();
@@ -108,11 +107,9 @@ static THD_FUNCTION(BatteryThread, arg) {
 
     update_battery_level();
     update_charging_state();
-    update_battery_state();
 
     while (true) {
         update_battery_level();
-        update_battery_state();
         chThdSleepSeconds(BATTERY_CHECK_INTERVAL_SEC);
     }
 }
@@ -121,6 +118,10 @@ void start_battery_monitoring(void) {
     chThdCreateStatic(waBatteryThread, sizeof(waBatteryThread), BATTERY_MONITORING_THREAD_PRIORITY, BatteryThread, NULL);
 }
 
-enum BatteryState get_current_battery_state(void) {
+enum BatteryLevel get_current_battery_level(void) {
     return current_state;
+}
+
+bool is_charging(void) {
+    return charging;
 }
