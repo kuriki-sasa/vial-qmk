@@ -20,6 +20,7 @@ enum Tps40Keycodes {
     BT_3,
     DISCONNECT_BT,
     TOGGLE_LED_MODE,
+    REBOOT,
 };
 
 void keyboard_pre_init_kb(void) {
@@ -32,7 +33,7 @@ void keyboard_post_init_kb(void) {
     start_usb_monitoring();
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     // Handling custom keycodes
     switch (keycode) {
         case DEEP_SLEEP:
@@ -78,6 +79,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case TOGGLE_LED_MODE:
             if (record->event.pressed) {
                 toggle_led_mode();
+            }
+            break;
+        case REBOOT:
+            if (record->event.pressed) {
+                soft_reset_keyboard();
             }
             break;
     }

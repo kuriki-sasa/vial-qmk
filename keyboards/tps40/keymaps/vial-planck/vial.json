@@ -49,6 +49,11 @@
       "name": "Toggle LED mode",
       "title": "Change LED indication mode",
       "shortName": "LED\nmode"
+    },
+    {
+      "name": "Reboot",
+      "title": "Reboot TPS40",
+      "shortName": "Reboot"
     }
   ],
   "layouts": {
